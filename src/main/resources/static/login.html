@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+</head>
+<body>
+<!--这里action的地址需要加项目路径：/sc-->
+<form action="/sc/user/login" method="post">
+    <input type="text" name="username" />
+    <input type="password" name="password">
+    <button type="submit">登录</button>
+    
+    <input type="checkbox"name="remember-me"title="记住密码"/>记住密码<br/>
+</form>
+</body>
+</html>
