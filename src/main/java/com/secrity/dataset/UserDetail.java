@@ -55,13 +55,13 @@ public class UserDetail implements UserDetails{
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     //是否可用
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
 }
