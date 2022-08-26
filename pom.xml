@@ -51,7 +51,19 @@
 			<version>3.0.5</version>
 		</dependency>
 
+		<!--jjwt 生成token-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
+        </dependency>
 
+		 <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-all -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.1.4</version>
+        </dependency>
 	</dependencies>
 
 	<build>
