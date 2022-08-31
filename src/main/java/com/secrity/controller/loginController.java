@@ -11,14 +11,21 @@ package com.secrity.controller;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.secrity.dataset.Result;
+import com.secrity.service.LoginService;
 
 
 @Controller
 public class loginController {
 
+    @Autowired
+    private LoginService loginService;
+    
     @RequestMapping("/index")
     public String index(HttpServletResponse response) {
         System.out.println("sdfdsfd");
@@ -35,9 +42,16 @@ public class loginController {
        
     }
     
-    
-    @PostMapping("/getStr")
-    public void getStr() {
-        System.out.println("sdfdsfd");
+    /**
+     * 單點登錄
+     * @param userName
+     * @param pass
+     * @return
+     */
+    @PostMapping("/user/jwtLogin")
+    @ResponseBody
+    public Result jwtLogin(String userName,String pass) {
+        Result result = loginService.login(userName, pass);
+        return result;
     }
 }

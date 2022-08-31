@@ -1,4 +1,4 @@
-package com.secrity;
+package com.secrity.util;
 
 import java.util.Date;
 import java.util.UUID;

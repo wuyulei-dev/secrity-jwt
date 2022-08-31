@@ -23,6 +23,15 @@ public class UserDetail implements UserDetails{
         this.sysUser=sysUser;
     }
 
+    public SysUser getSysUser() {
+        return sysUser;
+    }
+
+    public void setSysUser(
+        SysUser sysUser) {
+        this.sysUser = sysUser;
+    }
+
     //权限集合
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
