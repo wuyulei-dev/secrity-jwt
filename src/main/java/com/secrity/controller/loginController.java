@@ -43,7 +43,7 @@ public class loginController {
     }
     
     /**
-     * 單點登錄
+     * 單點登錄接口，需放行不走secrity框架
      * @param userName
      * @param pass
      * @return
@@ -53,5 +53,13 @@ public class loginController {
     public Result jwtLogin(String userName,String pass) {
         Result result = loginService.login(userName, pass);
         return result;
+    }
+    
+    
+    @PostMapping("/user/add")
+    @ResponseBody
+    public Result addUser(String userName,String pass) {
+        System.out.println("添加用户需要验证");
+        return Result.success();
     }
 }

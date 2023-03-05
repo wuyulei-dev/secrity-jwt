@@ -39,8 +39,12 @@ public class MyUserDetailService implements UserDetailsService{
             throw new RuntimeException("用户名或密码错误");
         }
         
-        //封装成UserDetails对象并返回 
-        UserDetail userDetail = new UserDetail(sysUser);
+        //封装UserDetails对象并返回 
+        UserDetail userDetail = new UserDetail();
+        userDetail.setSysUser(sysUser);
+        //設置權限信息
+//        List<RoleInfo> roleInfoList = roleInfoService.listRoleByUserId(userInfo.getUserId());
+//        userDetail.setRoleInfoList(roleInfoList);
         return userDetail;
     }
 
