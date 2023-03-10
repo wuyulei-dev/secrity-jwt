@@ -17,22 +17,32 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import com.secrity.filter.TokenFilter;
+import com.secrity.service.UserService;
 
 
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     
+    //给TokenFilter注入容器中的service
     @Autowired
-    private DataSource dataSource;
+    private UserService userService;
+    
+    /**
+     * 不需要权限过滤资源定义
+     */
+    public static final String[] IGNORING_RESOURCES = {
+             "/static/**" //静态资源
+    };
     
     @Autowired
-    private TokenFilter tokenFilter;
+    private DataSource dataSource;
     
     //记住我-数据库配置
     @Bean
@@ -61,7 +71,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(
         WebSecurity web) throws Exception {
         //静态资源配置，不经secrity过滤器，不被拦截
-        web.ignoring().antMatchers("/static/**");
+        web.ignoring().antMatchers("/js/**");
     }
     
    
@@ -82,11 +92,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
          *
                         *内置访问控制方法
          *  1 permitAll()
-                permitAll()表示所匹配的URL 任何人都允许访问。
+                permitAll()表示所匹配的URL 任何人都允许访问。不会绕开springsecurity的过滤器
             2 denyAll()
                 denyAll()表示所匹配的URL 都不允许被访问。
             3 anonymous()
-                anonymous()表示可以匿名访问匹配的URL。和permitAll()效果类似，只是设置为anonymous()的url 会执行filter 链中
+                anonymous()表示可以匿名访问匹配的URL。和permitAll()效果类似，只是会执行filter链,到达接口时，已经经过层层过滤滤器了
             4 authenticated()
                 authenticated()表示所匹配的URL 都需要被认证才能访问。
             5 fullyAuthenticated()
@@ -94,24 +104,39 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             6 rememberMe()
                                         被“remember me”的用户允许访问
                                         
-                     *不通过Session获取SecurityContext
+                     *前后端分离：后台：不在SecurityContext设置用户信。，  配置： 不通过Session获取SecurityContext 
          *SecurityContext：存储登录后用户信息     默认从session中获取SecurityContext。只要是同一个会话就能获取到同一个用户信息
                         *                                         前后端分离时，要禁用
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
          */
-        http.authorizeRequests()    //开始权限配置
+        
+//        //前后端不分离
+//        http.authorizeRequests()    //开始权限配置
+//                 .antMatchers("/main.html").permitAll()  //main.html页面不需要认证
+//                 .antMatchers("/errorPage.html").permitAll()  //必须将登录失败页面放行，不然会跳转到login.html页面
+//                 .anyRequest().authenticated()  //除以上配置,其他所有访问都需要认证，都需登录后才能访问
+//                 .and()
+//             //表单登录  fromLogin不配置时，过滤器链中无username..Filter
+//             .formLogin() 
+//                 .loginPage("/login.html")  //登录页，未登录时跳转页面（路径为去掉应用路径的相对路径）
+//                 .loginProcessingUrl("/user/login")  //登录请求接口（路径为去掉应用路径的相对路径）
+//                 .successForwardUrl("/sucess")  //认证成功后跳转url，要有对应的controller方法处理
+//                 .failureForwardUrl("/errorPage")   //认证失败后跳转url，要有对应的controller方法处理
+//                 .permitAll() //放行，不认证 
+//             .and()
+//             .csrf().disable();
+        
+        //前后端分离
+        http
+             //不通过session获取SecurityContext
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .authorizeRequests()    //开始权限配置
                   .antMatchers("/user/jwtLogin").permitAll() //单点登录接口放行（所匹配的URL 任何人都允许访问）
                   .antMatchers("/main.html").permitAll()  //main.html页面不需要认证
+                  .antMatchers("/errorPage.html").permitAll()  //必须将登录失败页面放行，不然会跳转到login.html页面
                   .anyRequest().authenticated()  //除以上配置,其他所有访问都需要认证，都需登录后才能访问
                   .and()
-             //表单登录
-             .formLogin() 
-                 .loginPage("/login.html")  //登录页，未登录时跳转页面（路径为去掉应用路径的相对路径）
-                 .loginProcessingUrl("/user/login")  //登录请求接口（路径为去掉应用路径的相对路径）
-                 .successForwardUrl("/sucess")       //认证成功后跳转url，要有对应的controller方法处理
-                 .failureForwardUrl("/error")       //认证失败后跳转url，要有对应的controller方法处理
-                 .permitAll()    //放行，不认证
-                 .and()
              .csrf().disable();
         
         //退出登录
@@ -126,8 +151,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .tokenValiditySeconds(60);   //设置有效时长，单位秒
                 //.userDetailsService(userDetailsService)   如果有自定义userService,需进行该配置
         
-        //把token校验过滤器添加到过滤器链中
-        http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
+        //给filter注入容器中的service，把token校验过滤器添加到过滤器链中:不能将TokenFilter注入到spring容器
+        http.addFilterBefore(new TokenFilter(userService), UsernamePasswordAuthenticationFilter.class);
     }
     
 //    @Override

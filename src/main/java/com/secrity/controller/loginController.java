@@ -26,6 +26,24 @@ public class loginController {
     @Autowired
     private LoginService loginService;
     
+   
+    
+    @RequestMapping("/sucess")
+    public String login(HttpServletResponse response) {
+        System.out.println("登录成功");
+        //访问HTML文件，它并不支持响应头带有 post 的应答包，所以会报错，解决：加redirect重定向直接请求html页面
+        return "redirect:/success.html";   //绝对路径：相对于项目根路径+/main.html -> http://127.0.0.1:8080/sc/main.html
+       
+    }
+    
+    @RequestMapping("/errorPage")
+    public String errorPage() {
+        System.out.println("登录失败");
+        //访问HTML文件，它并不支持响应头带有 post 的应答包，所以会报错，解决：加redirect重定向直接请求html页面
+        return "redirect:/errorPage.html";   //绝对路径：相对于项目根路径+/main.html -> http://127.0.0.1:8080/sc/main.html
+       
+    }
+    
     @RequestMapping("/index")
     public String index(HttpServletResponse response) {
         System.out.println("sdfdsfd");
@@ -43,15 +61,28 @@ public class loginController {
     }
     
     /**
-     * 單點登錄接口，需放行不走secrity框架
+     * 單點登錄接口，走过滤器链
      * @param userName
      * @param pass
      * @return
      */
     @PostMapping("/user/jwtLogin")
     @ResponseBody
-    public Result jwtLogin(String userName,String pass) {
-        Result result = loginService.login(userName, pass);
+    public Result jwtLogin(String userName,String passWord) {
+        Result result = loginService.login(userName, passWord);
+        return result;
+    }
+    
+    /**
+     * 單點退出接口，走
+     * @param userName
+     * @param pass
+     * @return
+     */
+    @PostMapping("/user/logout")
+    @ResponseBody
+    public Result logout() {
+        Result result = loginService.logout();
         return result;
     }
     

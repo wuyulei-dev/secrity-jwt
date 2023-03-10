@@ -12,7 +12,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class JwtUtils {
     //过期时间：单位ms
-    private static final long EXPIRED_TIME =1* 1000;
+    private static final long EXPIRED_TIME =30*60*1000;
     //密匙
     private static String secretyKey = "secrityProject";
 

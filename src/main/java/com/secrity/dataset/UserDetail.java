@@ -34,19 +34,20 @@ public class UserDetail implements UserDetails{
     //Authentication 中的 getAuthorities() 实际是由 UserDetails 的 getAuthorities() 传递而形成的
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (grantedAuthorities != null) return this.grantedAuthorities;
-
-        // 从 roleInfoList 中取出当前用户拥有的权限，填充进数组
-        List<SimpleGrantedAuthority> grantedAuthorities = new ArrayList<>();
-        // 使用 String 来保存权限
-        List<String> authorities = new ArrayList<>();
-        roleInfoList.forEach(role -> {
-            authorities.add(role.getRoleCode());
-            grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleCode()));
-        });
-
-        this.grantedAuthorities = grantedAuthorities;
-        return this.grantedAuthorities;
+//        if (grantedAuthorities != null) return this.grantedAuthorities;
+//
+//        // 从 roleInfoList 中取出当前用户拥有的权限，填充进数组
+//        List<SimpleGrantedAuthority> grantedAuthorities = new ArrayList<>();
+//        // 使用 String 来保存权限
+//        List<String> authorities = new ArrayList<>();
+//        roleInfoList.forEach(role -> {
+//            authorities.add(role.getRoleCode());
+//            grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleCode()));
+//        });
+//
+//        this.grantedAuthorities = grantedAuthorities;
+//        return this.grantedAuthorities;
+        return null;
     }
 
 
