@@ -92,11 +92,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
          *
                         *内置访问控制方法
          *  1 permitAll()
-                permitAll()表示所匹配的URL 任何人都允许访问。不会绕开springsecurity的过滤器
+                permitAll()表示所匹配的URL 任何人(登录、未登录)都允许访问。会走springsecurity的过滤器链
             2 denyAll()
                 denyAll()表示所匹配的URL 都不允许被访问。
             3 anonymous()
-                anonymous()表示可以匿名访问匹配的URL。和permitAll()效果类似，只是会执行filter链,到达接口时，已经经过层层过滤滤器了
+                anonymous()表示可以匿名访问匹配的URL。用户登录前能访问，登录后不能访问（登录接口，只需登陆一次就可以）
             4 authenticated()
                 authenticated()表示所匹配的URL 都需要被认证才能访问。
             5 fullyAuthenticated()
