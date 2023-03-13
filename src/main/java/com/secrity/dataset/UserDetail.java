@@ -18,38 +18,53 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.secrity.entity.RoleInfo;
 import com.secrity.entity.SysUser;
 
-public class UserDetail implements UserDetails{
+public class UserDetail implements UserDetails {
 
     //包装实体类,来获取数据库查询到的用户信息
     private SysUser sysUser;
-    
+
     //数据库用户权限列表
-    private List<RoleInfo> roleInfoList;
-    
+    private List<String> permissions;
+
     //secrity需要的权限列表
-    private Collection<? extends GrantedAuthority> grantedAuthorities;
-  
+    private List<GrantedAuthority> grantedAuthorities;
+    
+    
+    public UserDetail() {
+    }
+    
+    public UserDetail(SysUser sysUser,List<String> permissions) {
+        this.sysUser=sysUser;
+        this.permissions=permissions;
+        getAuthorities();
+    }
 
     // 返回当前用户的权限集合
     //Authentication 中的 getAuthorities() 实际是由 UserDetails 的 getAuthorities() 传递而形成的
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-//        if (grantedAuthorities != null) return this.grantedAuthorities;
-//
-//        // 从 roleInfoList 中取出当前用户拥有的权限，填充进数组
-//        List<SimpleGrantedAuthority> grantedAuthorities = new ArrayList<>();
-//        // 使用 String 来保存权限
-//        List<String> authorities = new ArrayList<>();
-//        roleInfoList.forEach(role -> {
-//            authorities.add(role.getRoleCode());
-//            grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleCode()));
-//        });
-//
-//        this.grantedAuthorities = grantedAuthorities;
-//        return this.grantedAuthorities;
-        return null;
+        if (grantedAuthorities != null)
+            return this.grantedAuthorities;
+
+        // 从 roleInfoList 中取出当前用户拥有的权限，填充进数组
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        for (String permission : permissions) {
+            SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(permission);
+            grantedAuthorities.add(simpleGrantedAuthority);
+        }
+        this.grantedAuthorities = grantedAuthorities;
+        return this.grantedAuthorities;
     }
 
+
+    public List<String> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(
+        List<String> permissions) {
+        this.permissions = permissions;
+    }
 
     public SysUser getSysUser() {
         return sysUser;

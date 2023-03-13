@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -23,10 +24,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import com.secrity.exception.AccessDeniedHandlerImp;
+import com.secrity.exception.AuthenticationEntryPointImp;
 import com.secrity.filter.TokenFilter;
 import com.secrity.service.UserService;
 
-
+//开启基于注解的权限控制
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     
@@ -151,8 +155,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .tokenValiditySeconds(60);   //设置有效时长，单位秒
                 //.userDetailsService(userDetailsService)   如果有自定义userService,需进行该配置
         
-        //给filter注入容器中的service，把token校验过滤器添加到过滤器链中:不能将TokenFilter注入到spring容器
+        //把token校验过滤器添加到过滤器链中；给filter注入容器中的service，不能将TokenFilter注入到spring容器
         http.addFilterBefore(new TokenFilter(userService), UsernamePasswordAuthenticationFilter.class);
+        
+        //自定义异常处理
+        http.exceptionHandling()
+            //自定义认证失败处理
+            .authenticationEntryPoint(new AuthenticationEntryPointImp())
+            //自定义权限校验失败处理
+            .accessDeniedHandler(new AccessDeniedHandlerImp());
     }
     
 //    @Override

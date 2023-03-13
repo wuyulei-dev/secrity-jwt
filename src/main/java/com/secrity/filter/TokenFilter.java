@@ -10,18 +10,16 @@
 package com.secrity.filter;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import com.secrity.dataset.UserDetail;
 import com.secrity.entity.SysUser;
 import com.secrity.service.UserService;
 import com.secrity.util.JwtUtils;
@@ -83,14 +81,16 @@ public class TokenFilter extends OncePerRequestFilter {
             throw new RuntimeException("用户未登录");
         }
         
-        //TODO 获取权限信息，封装到token中
-        Collection<? extends GrantedAuthority> authorities=null;
+       
         
+        //封装UserDetails对象并返回 
+        List<String> permissions = Arrays.asList("aa","asdfasdf");
+        UserDetail userDetail = new UserDetail(user,permissions);
         //认证成功，将用户信息存入SecurityContextHolder，供后面的filter从SecurityContextHolder中获取用户信息，看是否是已认证
         //必须用三个参数的构造方法，创建的是一个已认证状态的token
         //注意：因为该SecurityContextHolder不是从session中获取的，所以不同请求的SecurityContextHolder可能不是同一个，因为不同请求对应的线程不同
         //线程中的SecurityContextHolder也就不同
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail, userDetail.getPassword(), userDetail.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         //放行
         filterChain.doFilter(request, response);

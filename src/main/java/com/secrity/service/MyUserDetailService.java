@@ -9,6 +9,8 @@
  */
 package com.secrity.service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,11 +42,8 @@ public class MyUserDetailService implements UserDetailsService{
         }
         
         //封装UserDetails对象并返回 
-        UserDetail userDetail = new UserDetail();
-        userDetail.setSysUser(sysUser);
-        //設置權限信息
-//        List<RoleInfo> roleInfoList = roleInfoService.listRoleByUserId(userInfo.getUserId());
-//        userDetail.setRoleInfoList(roleInfoList);
+        List<String> permissions = Arrays.asList("aa,bb");
+        UserDetail userDetail = new UserDetail(sysUser,permissions);
         return userDetail;
     }
 

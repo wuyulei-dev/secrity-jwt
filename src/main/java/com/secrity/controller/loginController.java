@@ -12,6 +12,8 @@ package com.secrity.controller;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -86,11 +88,11 @@ public class loginController {
         return result;
     }
     
-    
+    @PreAuthorize("hasAuthority('aa')")
     @PostMapping("/user/add")
     @ResponseBody
-    public Result addUser(String userName,String pass) {
-        System.out.println("添加用户需要验证");
+    public Result addUser(Authentication authentication) {
+        System.out.println(authentication);
         return Result.success();
     }
 }
