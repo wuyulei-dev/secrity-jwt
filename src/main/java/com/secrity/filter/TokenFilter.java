@@ -10,7 +10,6 @@
 package com.secrity.filter;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.secrity.dataset.UserDetail;
 import com.secrity.entity.SysUser;
+import com.secrity.mapper.MenuMapper;
 import com.secrity.service.UserService;
 import com.secrity.util.JwtUtils;
 import cn.hutool.core.util.ObjectUtil;
@@ -38,16 +38,19 @@ import io.jsonwebtoken.Claims;
 //@Component
 public class TokenFilter extends OncePerRequestFilter {
 
-    //无法自动注入获取。在secrity配置类中注入容器中的service
+    //filter不在容器中，无法自动注入。应该在secrity配置类中配置容器中的service
     private UserService userService;
+    
+    private MenuMapper menuMapper;
     
     public TokenFilter() {
         //调用父类构造器
         super();
     }
     
-    public TokenFilter(UserService userService) {
+    public TokenFilter(UserService userService,MenuMapper menuMapper) {
         this.userService=userService;
+        this.menuMapper=menuMapper;
     }
     
     @Override
@@ -82,15 +85,15 @@ public class TokenFilter extends OncePerRequestFilter {
         }
         
        
-        
-        //封装UserDetails对象并返回 
-        List<String> permissions = Arrays.asList("aa","asdfasdf");
-        UserDetail userDetail = new UserDetail(user,permissions);
         //认证成功，将用户信息存入SecurityContextHolder，供后面的filter从SecurityContextHolder中获取用户信息，看是否是已认证
+        //封装userDetail
+        List<String> permissions = menuMapper.selectPermsByUserid(userId);
+        UserDetail userDetail = new UserDetail(user,permissions);
         //必须用三个参数的构造方法，创建的是一个已认证状态的token
         //注意：因为该SecurityContextHolder不是从session中获取的，所以不同请求的SecurityContextHolder可能不是同一个，因为不同请求对应的线程不同
         //线程中的SecurityContextHolder也就不同
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail, userDetail.getPassword(), userDetail.getAuthorities());
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken
+                (userDetail, userDetail.getPassword(), userDetail.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         //放行
         filterChain.doFilter(request, response);

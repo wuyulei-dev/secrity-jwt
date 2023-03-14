@@ -15,7 +15,6 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.secrity.entity.RoleInfo;
 import com.secrity.entity.SysUser;
 
 public class UserDetail implements UserDetails {

@@ -21,6 +21,7 @@ import cn.hutool.json.JSONUtil;
 
 
 //自定义认证失败处理 需配置给SpringSecurity：：只处理过滤器链中的异常
+@Component
 public class AuthenticationEntryPointImp implements AuthenticationEntryPoint{
 
     @Override

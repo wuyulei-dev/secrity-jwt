@@ -88,7 +88,7 @@ public class loginController {
         return result;
     }
     
-    @PreAuthorize("hasAuthority('aa')")
+    @PreAuthorize("hasAuthority('sys:section:add')")
     @PostMapping("/user/add")
     @ResponseBody
     public Result addUser(Authentication authentication) {

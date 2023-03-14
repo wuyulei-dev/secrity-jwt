@@ -27,6 +27,7 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import com.secrity.exception.AccessDeniedHandlerImp;
 import com.secrity.exception.AuthenticationEntryPointImp;
 import com.secrity.filter.TokenFilter;
+import com.secrity.mapper.MenuMapper;
 import com.secrity.service.UserService;
 
 //开启基于注解的权限控制
@@ -38,6 +39,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserService userService;
     
+    @Autowired
+    private MenuMapper menuMapper;
+    
+    @Autowired
+    private AuthenticationEntryPointImp authenticationEntryPointImp;
+    
+    @Autowired
+    private AccessDeniedHandlerImp accessDeniedHandlerImp;
     /**
      * 不需要权限过滤资源定义
      */
@@ -156,14 +165,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //.userDetailsService(userDetailsService)   如果有自定义userService,需进行该配置
         
         //把token校验过滤器添加到过滤器链中；给filter注入容器中的service，不能将TokenFilter注入到spring容器
-        http.addFilterBefore(new TokenFilter(userService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new TokenFilter(userService,menuMapper), UsernamePasswordAuthenticationFilter.class);
         
         //自定义异常处理
         http.exceptionHandling()
             //自定义认证失败处理
-            .authenticationEntryPoint(new AuthenticationEntryPointImp())
+            .authenticationEntryPoint(authenticationEntryPointImp)
             //自定义权限校验失败处理
-            .accessDeniedHandler(new AccessDeniedHandlerImp());
+            .accessDeniedHandler(accessDeniedHandlerImp);
     }
     
 //    @Override

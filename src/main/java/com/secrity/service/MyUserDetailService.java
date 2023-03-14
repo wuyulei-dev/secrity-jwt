@@ -22,6 +22,7 @@ import com.secrity.dataset.UserDetail;
 import com.secrity.entity.SysUser;
 import com.secrity.mapper.UserMapper;
 
+//用户请求登录接口时会调用
 @Service
 public class MyUserDetailService implements UserDetailsService{
 
@@ -36,13 +37,13 @@ public class MyUserDetailService implements UserDetailsService{
         queryWrapper.eq(SysUser::getLoginName, username);
         SysUser sysUser = userMapper.selectOne(queryWrapper);
         
-        //如果查询不到数据就抛出异常，由异常处理过滤器处理
+        //如果查询不到数据就抛出异常，由全局异常处理
         if(Objects.isNull(sysUser)) {
             throw new RuntimeException("用户名或密码错误");
         }
         
-        //封装UserDetails对象并返回 
-        List<String> permissions = Arrays.asList("aa,bb");
+        //封装UserDetails对象并返回.这里不用封装权限信息，因为每次请求filter中会封装权限信息
+        List<String> permissions = Arrays.asList("aa","asdfasdf");
         UserDetail userDetail = new UserDetail(sysUser,permissions);
         return userDetail;
     }
