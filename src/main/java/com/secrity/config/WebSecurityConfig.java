@@ -138,6 +138,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                 .permitAll() //放行，不认证 
 //             .and()
 //             .csrf().disable();
+//        
+//        //退出登录
+//        http.logout()
+//                .logoutUrl("/logout")   //注销的请求路径
+//                .logoutSuccessUrl("/login.html")  //注销成功后跳转页面
+//                .permitAll();     //放行
+//        
+//        //开启记住我功能
+//        http.rememberMe()
+//                .tokenRepository(persistentTokenRepository())  //配置TokenRepository
+//                .tokenValiditySeconds(60);   //设置有效时长，单位秒
+//                //.userDetailsService(userDetailsService)   如果有自定义userService,需进行该配置
         
         //前后端分离
         http
@@ -146,23 +158,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()    //开始权限配置
                   .antMatchers("/user/jwtLogin").permitAll() //单点登录接口放行（所匹配的URL 任何人都允许访问）
-                  .antMatchers("/main.html").permitAll()  //main.html页面不需要认证
-                  .antMatchers("/errorPage.html").permitAll()  //必须将登录失败页面放行，不然会跳转到login.html页面
                   .anyRequest().authenticated()  //除以上配置,其他所有访问都需要认证，都需登录后才能访问
                   .and()
              .csrf().disable();
+       
         
-        //退出登录
-        http.logout()
-                .logoutUrl("/logout")   //注销的请求路径
-                .logoutSuccessUrl("/login.html")  //注销成功后跳转页面
-                .permitAll();     //放行
-        
-        //开启记住我功能
-        http.rememberMe()
-                .tokenRepository(persistentTokenRepository())  //配置TokenRepository
-                .tokenValiditySeconds(60);   //设置有效时长，单位秒
-                //.userDetailsService(userDetailsService)   如果有自定义userService,需进行该配置
+       
         
         //把token校验过滤器添加到过滤器链中；给filter注入容器中的service，不能将TokenFilter注入到spring容器
         http.addFilterBefore(new TokenFilter(userService,menuMapper), UsernamePasswordAuthenticationFilter.class);
@@ -174,14 +175,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             //自定义权限校验失败处理
             .accessDeniedHandler(accessDeniedHandlerImp);
     }
-    
-//    @Override
-//    protected void configure(
-//        AuthenticationManagerBuilder auth) throws Exception {
-//        //配置内存用户，必须配置roles(否则启动失败)
-//        auth.inMemoryAuthentication().withUser("user").password("123").roles("admin");
-//    }
-
-  
-    
 }

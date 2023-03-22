@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.secrity.dataset.UserDetail;
 import com.secrity.entity.SysUser;
+import com.secrity.mapper.MenuMapper;
 import com.secrity.mapper.UserMapper;
 
 //用户请求登录接口时会调用
@@ -28,6 +29,9 @@ public class MyUserDetailService implements UserDetailsService{
 
     @Autowired
     private UserMapper userMapper;
+    
+    @Autowired
+    private MenuMapper menuMapper;
     
     @Override
     public UserDetails loadUserByUsername(
@@ -42,8 +46,8 @@ public class MyUserDetailService implements UserDetailsService{
             throw new RuntimeException("用户名或密码错误");
         }
         
-        //封装UserDetails对象并返回.这里不用封装权限信息，因为每次请求filter中会封装权限信息
-        List<String> permissions = Arrays.asList("aa","asdfasdf");
+        //封装UserDetails对象并返回
+        List<String> permissions = menuMapper.selectPermsByUserid(sysUser.getUserId());
         UserDetail userDetail = new UserDetail(sysUser,permissions);
         return userDetail;
     }

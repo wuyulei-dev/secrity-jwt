@@ -58,6 +58,10 @@ public class TokenFilter extends OncePerRequestFilter {
         HttpServletRequest request,
         HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
+        
+        //每次请求都经过该过滤器，去数据库查询用户信息，用性能问题
+        //查用户信息的方法应该用缓存 
+        
         //获取token
         String token = request.getHeader("authenticateAction");
         if (StrUtil.isEmpty(token)) {
@@ -76,6 +80,8 @@ public class TokenFilter extends OncePerRequestFilter {
             throw new RuntimeException("token非法");
         }
         
+       
+        //可直接用userservice 获取用户信息,
         //获取用户信息
         String userId = (String) claims.get("userId");
         SysUser user = userService.getUserWithId(userId);

@@ -38,9 +38,9 @@ public class LoginService {
         
       //前后端不分离
         //log.debug("进入login方法");
-      // 1 创建 UsernamePasswordAuthenticationToken 这里的 loginAccount 就是 username
+      // 1 创建 UsernamePasswordAuthenticationToken未认证状态 这里的 loginAccount 就是 username
       UsernamePasswordAuthenticationToken usernameAuthentication = new UsernamePasswordAuthenticationToken(userName, pass);
-      // 2 认证
+      // 2 认证 已认证状态
       Authentication authentication = this.authenticationManager.authenticate(usernameAuthentication);
       //判断认证是否通过  通过：authenticate!=null 不通过：authenticate=null
       if(Objects.isNull(authentication)) {
